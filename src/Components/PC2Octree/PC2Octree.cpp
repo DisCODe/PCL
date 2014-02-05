@@ -57,6 +57,7 @@ void PC2Octree::cloud_xyzrgb_to_octree() {
 	LOG(LTRACE) << "PC2Octree::cloud_xyzrgb_to_octree";
 	// Read from dataport.
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
+    LOG(LINFO) << "features quantity: " << cloud -> size();
 
 	// Set voxel resolution.
 	float voxelSize = 0.01f;
@@ -100,6 +101,23 @@ void PC2Octree::cloud_xyzrgb_to_octree() {
       branchNodeCount++;
       // leaf nodes are traversed in the end
       // ASSERT_EQ( leafNodeVisited, false);
+      int childCount =0;
+      for(int i=0; i<8; i++) {
+//          LOG(LINFO) << "before dynamic cast " << bfIt.getCurrentOctreeNode();
+          pcl::octree::OctreeBranchNode<pcl::PointXYZRGB>* branchNode;
+          try {
+          branchNode = static_cast< pcl::octree::OctreeBranchNode<pcl::PointXYZRGB>* >(bfIt.getCurrentOctreeNode());
+          } catch(const std::bad_cast &ex) {
+              LOG(LINFO) << "bad cast!";
+              LOG(LINFO) << ex.what();
+          }
+
+//          LOG(LINFO) << "passed dynamic cast " << branchNode;
+//          bfIt.getCurrentOctreeNode();
+          if(branchNode->hasChild(i))
+              childCount++;
+      }
+      LOG(LINFO) << "node child count: " << childCount;
     }
 
     if (bfIt.isLeafNode ())
