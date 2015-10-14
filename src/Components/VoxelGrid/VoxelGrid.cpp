@@ -42,7 +42,6 @@ void VoxelGrid::prepareInterface() {
 	h_filter.setup(boost::bind(&VoxelGrid::filter, this));
 	registerHandler("filter", &h_filter);
 	addDependency("filter", &in_cloud_xyzrgb);
-
 	h_filter_normal.setup(boost::bind(&VoxelGrid::filter_normal, this));
  	registerHandler("filter_normal", &h_filter_normal);
  	addDependency("filter_normal", &in_cloud_xyzrgb_normal);

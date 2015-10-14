@@ -102,7 +102,6 @@ protected:
     void on_point();
 	void on_spin();
 
-
     Base::Property<std::string> prop_window_name;
     Base::Property<bool> prop_coordinate_system;
     Base::Property<bool> prop_two_viewports;
