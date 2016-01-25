@@ -47,7 +47,8 @@ CloudViewer::CloudViewer(const std::string & name) :
 	prop_display_object_meshes("objects.display_meshes",true),
 	prop_display_object_labels("objects.display_labels", true),
 	prop_display_objects_scene_correspondences("objects.display_scene_correspondences",true),
-	prop_display_object_coordinate_systems("objects.display_coordinate_systems",true)
+	prop_display_object_coordinate_systems("objects.display_coordinate_systems",true),
+	prop_headless("headless", false)
 {
 	// General properties.
 	registerProperty(prop_title);
@@ -87,6 +88,7 @@ CloudViewer::CloudViewer(const std::string & name) :
 	// Label properties.
 	registerProperty(prop_label_scale);
 
+	registerProperty(prop_headless);
 
 	viewer = NULL;
 }
@@ -152,6 +154,7 @@ void CloudViewer::prepareInterface() {
 bool CloudViewer::onInit() {
 	CLOG(LTRACE) << "onInit";
 
+	if (prop_headless) return true;
 	// Initialize camera and set its parameters.
 	viewer = new pcl::visualization::PCLVisualizer(prop_title);
 	viewer->initCameraParameters();
@@ -321,6 +324,8 @@ void CloudViewer::refreshViewerState() {
 void CloudViewer::refreshSceneCloudXYZRGB(pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_cloud_xyzrgb_){
 	CLOG(LTRACE) << "refreshSceneCloudXYZRGB";
 
+	if (prop_headless) return;
+
 	if (!prop_display_scene_xyzrgb) {
 		viewer->removePointCloud ("scene_xyzrgb");
 	} else {
@@ -342,6 +347,8 @@ void CloudViewer::refreshSceneCloudXYZRGB(pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 
 void CloudViewer::refreshSceneCloudXYZSIFT(pcl::PointCloud<PointXYZSIFT>::Ptr scene_cloud_xyzsift_){
 	CLOG(LTRACE) << "refreshSceneCloudXYZSIFT";
+
+	if (prop_headless) return;
 
 	if (!prop_display_scene_xyzsift) {
 		viewer->removePointCloud ("scene_xyzsift");
@@ -372,6 +379,8 @@ void CloudViewer::refreshSceneCloudXYZSIFT(pcl::PointCloud<PointXYZSIFT>::Ptr sc
 
 void CloudViewer::refreshOMCloudsXYZRGB(std::vector<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> om_clouds_xyzrgb_) {
 	CLOG(LTRACE) << "refreshOMCloudsXYZRGB";
+
+	if (prop_headless) return;
 
 	if (!prop_display_objects_xyzrgb) {
 		// Remove object clouds
@@ -424,6 +433,8 @@ void CloudViewer::refreshOMCloudsXYZRGB(std::vector<pcl::PointCloud<pcl::PointXY
 
 void CloudViewer::refreshOMCloudsXYZSIFT(std::vector<pcl::PointCloud<PointXYZSIFT>::Ptr> om_clouds_xyzsift_) {
 	CLOG(LTRACE) << "refreshOMCloudsXYZSIFT";
+
+	if (prop_headless) return;
 
 	if (!prop_display_objects_xyzsift) {
 		// Remove object clouds
@@ -491,6 +502,8 @@ void CloudViewer::refreshOMCloudsXYZSIFT(std::vector<pcl::PointCloud<PointXYZSIF
 void CloudViewer::refreshOMBoundingBoxes(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>  om_vertices_xyz_, const std::vector< std::vector<pcl::Vertices> > & om_lines_) {
 	CLOG(LTRACE) << "refreshOMBoundingBoxes";
 
+	if (prop_headless) return;
+
 	// Remove bounding boxes objects - performed always! TODO FIX!
 	for(int i=0; i< previous_om_bb_size; i++) {
 		// Generate given object BB name prefix.
@@ -539,6 +552,8 @@ void CloudViewer::refreshOMBoundingBoxes(std::vector<pcl::PointCloud<pcl::PointX
 
 void CloudViewer::refreshOMMeshes(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>  om_vertices_xyz_, const std::vector< std::vector<pcl::Vertices> > & om_triangles_) {
 	CLOG(LTRACE) << "refreshOMMeshes";
+
+	if (prop_headless) return;
 
 	// Remove meshes objects - performed always! TODO FIX!
 	for(int i=0; i< previous_om_meshes_size; i++) {

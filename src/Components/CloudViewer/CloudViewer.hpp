@@ -229,6 +229,9 @@ protected:
     /// Property: scene cloud translation - z
     Base::Property<float> prop_scene_translation_z;
 
+	/// Property: run headless
+	Base::Property<bool> prop_headless;
+
 
 	/// Value indicating how many XYZRGB objects/models were previously displayed.
 	unsigned int previous_om_xyzrgb_size;
