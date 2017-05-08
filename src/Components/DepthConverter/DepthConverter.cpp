@@ -381,7 +381,7 @@ void DepthConverter::process_depth_xyz_color() {
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
     uint32_t pr, pg, pb;
-    const double max_z = 1.0e4;
+    const double max_z = 1.0e5;
 
     CLOG(LINFO) << "Generating depth point cloud";
     try {
@@ -391,6 +391,7 @@ void DepthConverter::process_depth_xyz_color() {
             for(int x = 0; x < depth_xyz.cols; x++)
             {
                 cv::Vec3f point = depth_xyz.at<cv::Vec3f>(y, x);
+                //CLOG(LNOTICE) << point;
                 if(fabs(point[2] - max_z) < FLT_EPSILON || fabs(point[2]) > max_z) continue;
 
 

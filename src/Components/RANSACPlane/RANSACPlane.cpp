@@ -20,7 +20,7 @@ namespace RANSACPlane {
 
 RANSACPlane::RANSACPlane(const std::string & name) :
 		Base::Component(name),
-		distance("distance", 0.01) {
+		distance("distance", 10) {
 			
 	registerProperty(distance);
 
@@ -35,6 +35,7 @@ void RANSACPlane::prepareInterface() {
 	registerStream("in_xyz", &in_xyz);
 	registerStream("out_outliers", &out_outliers);
 	registerStream("out_inliers", &out_inliers);
+	registerStream("out_colored", &out_colored);
 	registerStream("out_model", &out_model);
 	// Register handlers
 	h_ransac.setup(boost::bind(&RANSACPlane::ransac, this));
@@ -76,44 +77,53 @@ void RANSACPlane::ransac() {
 	// Mandatory
 	seg.setModelType(pcl::SACMODEL_PLANE);
 	seg.setMethodType(pcl::SAC_RANSAC);
-	seg.setDistanceThreshold(0.01);
+	seg.setDistanceThreshold(0.001 * distance);
 
 	seg.setInputCloud(cloud);
 	seg.segment(*inliers, *coefficients);
 
 	if (inliers->indices.size() == 0) {
 		CLOG(LERROR) << "Could not estimate a planar model for the given dataset.";
+		} else {
+
+		CLOG(LINFO) << "Model coefficients: " << coefficients->values[0] << " "
+				<< coefficients->values[1] << " " << coefficients->values[2] << " "
+				<< coefficients->values[3];
+
+		CLOG(LINFO) << "Model inliers: " << inliers->indices.size();
+
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_inliers(new pcl::PointCloud<pcl::PointXYZRGB>());
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_outliers(new pcl::PointCloud<pcl::PointXYZRGB>());
+
+		pcl::ExtractIndices<pcl::PointXYZRGB> extract;
+		extract.setInputCloud(cloud);
+		extract.setIndices(inliers);
+		extract.setNegative(false);
+
+		extract.filter(*cloud_inliers);
+
+		// Remove the planar inliers, extract the rest
+		extract.setNegative(true);
+		extract.filter(*cloud_outliers);
+
+		std::vector<float> model;
+		model.push_back(coefficients->values[0]);
+		model.push_back(coefficients->values[1]);
+		model.push_back(coefficients->values[2]);
+		model.push_back(coefficients->values[3]);
+		out_model.write(model);
+		
+		out_outliers.write(cloud_outliers);
+		out_inliers.write(cloud_inliers);
+		
+		for (int i = 0; i < inliers->indices.size(); ++i) {
+			(*cloud).at(inliers->indices[i]).r = 255;
+			(*cloud).at(inliers->indices[i]).g = 0;
+			(*cloud).at(inliers->indices[i]).b = 0;
+		}
 	}
-
-	CLOG(LINFO) << "Model coefficients: " << coefficients->values[0] << " "
-			<< coefficients->values[1] << " " << coefficients->values[2] << " "
-			<< coefficients->values[3];
-
-	CLOG(LINFO) << "Model inliers: " << inliers->indices.size();
-
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_inliers(new pcl::PointCloud<pcl::PointXYZRGB>());
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_outliers(new pcl::PointCloud<pcl::PointXYZRGB>());
-
-	pcl::ExtractIndices<pcl::PointXYZRGB> extract;
-	extract.setInputCloud(cloud);
-	extract.setIndices(inliers);
-	extract.setNegative(false);
-
-	extract.filter(*cloud_inliers);
-
-	// Remove the planar inliers, extract the rest
-	extract.setNegative(true);
-	extract.filter(*cloud_outliers);
-
-	std::vector<float> model;
-	model.push_back(coefficients->values[0]);
-	model.push_back(coefficients->values[1]);
-	model.push_back(coefficients->values[2]);
-	model.push_back(coefficients->values[3]);
-	out_model.write(model);
 	
-	out_outliers.write(cloud_outliers);
-	out_inliers.write(cloud_inliers);
+	out_colored.write(cloud);
 }
 
 void RANSACPlane::ransacxyz() {

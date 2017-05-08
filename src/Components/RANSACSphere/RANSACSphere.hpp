@@ -18,6 +18,7 @@
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/io/pcd_io.h>
@@ -25,6 +26,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/sample_consensus/ransac.h>
 
 using namespace std;
 namespace Processors {
@@ -80,18 +82,23 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ> > in_pcl;
+		Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr > in_pcl;
 
 // Output data streams
 
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_outliers;
-		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_inliers;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_outliers;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_inliers;
+		Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_colored;
 	// Handlers
 	Base::EventHandler2 h_ransac;
 
 	
 	// Handlers
 	void ransac();
+	
+	Base::Property<int> radius;
+	Base::Property<int> radius_dev;
+	Base::Property<int> distance;
 
 };
 

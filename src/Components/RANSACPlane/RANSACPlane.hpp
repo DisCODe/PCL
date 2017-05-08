@@ -86,6 +86,7 @@ protected:
 	// Output data streams
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_outliers;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_inliers;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_colored;
 	
 	Base::DataStreamOut< std::vector<float> > out_model;
 
@@ -97,7 +98,7 @@ protected:
 	void ransac();
 	void ransacxyz();
 
-	Base::Property<float> distance;
+	Base::Property<int> distance;
 
 };
 

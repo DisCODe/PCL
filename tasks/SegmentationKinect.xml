@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>Michał Laszkowski</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>ClustersViewer</brief>
+			<full></full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Processing">
+			<Executor name="Exec1"  period="1">
+				<Component name="Source" type="CameraNUI:CameraNUI" priority="1" bump="0">
+					<param name="sync">1</param>
+				</Component>
+				
+				<Component name="Converter" type="PCL:DepthConverter" priority="2" bump="0">
+				</Component>
+				
+				<Component name="Cluster" type="PCL:Clustering" priority="10" bump="0">
+				</Component>
+
+			</Executor>
+		</Subtask>
+		
+		<Subtask name="Visualisation">
+			<Executor name="Exec2" period="1">
+				<Component name="Window" type="PCL:CloudViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="Source.out_depth">
+			<sink>Converter.in_depth</sink>
+		</Source>
+		<Source name="Source.out_img">
+			<sink>Converter.in_color</sink>
+		</Source>
+		<Source name="Source.out_camera_info">
+			<sink>Converter.in_camera_info</sink>	
+		</Source>
+		<Source name="Converter.out_cloud_xyzrgb">
+			<sink>Cluster.in_cloud_xyzrgb</sink>		
+		</Source>
+		
+		<Source name="Cluster.out_colored">
+			<sink>Window.in_cloud_xyzrgb</sink>
+		</Source>
+	</DataStreams>
+</Task>
+
+
+
+

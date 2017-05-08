@@ -17,8 +17,23 @@ namespace Processors {
 namespace RANSACSphere {
 
 RANSACSphere::RANSACSphere(const std::string & name) :
-		Base::Component(name)  {
-
+		Base::Component(name),
+		radius("radius", 100),
+		radius_dev("radius_dev", 10),
+		distance("distance", 10)  {
+	
+	radius.addConstraint("1");
+	radius.addConstraint("1000");
+	registerProperty(radius);
+	
+	radius_dev.addConstraint("0");
+	radius_dev.addConstraint("100");
+	registerProperty(radius_dev);
+	
+	distance.addConstraint("1");
+	distance.addConstraint("100");
+	registerProperty(distance);
+	
 }
 
 RANSACSphere::~RANSACSphere() {
@@ -29,6 +44,7 @@ void RANSACSphere::prepareInterface() {
 	registerStream("in_pcl", &in_pcl);
 	registerStream("out_outliers", &out_outliers);
 	registerStream("out_inliers", &out_inliers);
+	registerStream("out_colored", &out_colored);
 	// Register handlers
 	h_ransac.setup(boost::bind(&RANSACSphere::ransac, this));
 	registerHandler("ransac", &h_ransac);
@@ -54,63 +70,31 @@ bool RANSACSphere::onStart() {
 }
 
 void RANSACSphere::ransac() {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_pcl.read();
 
-	pcl::PointCloud<pcl::PointXYZ> cloud = in_pcl.read();
+	// RANSAC objects: model and algorithm. 
+	pcl::SampleConsensusModelSphere<pcl::PointXYZRGB>::Ptr model(new pcl::SampleConsensusModelSphere<pcl::PointXYZRGB>(cloud)); 
+	pcl::RandomSampleConsensus<pcl::PointXYZRGB> ransac(model); 
+	model->setRadiusLimits(0.001*(radius-radius_dev), 0.001*(radius+radius_dev));  // The actual value is 7.25cm, but it even doesn't work with logically larger intervals as well. 
+	ransac.setMaxIterations(100000); 
+	ransac.setDistanceThreshold(0.001 * distance); 
+	ransac.computeModel(); 
+
+	std::vector<int> inliers; 
+	ransac.getInliers(inliers); 
+	if (inliers.size() == 0) 
+	{ 
+		CLOG(LERROR) << "Could not estimate a sphere model for the given dataset."; 
+	} else {
+		CLOG(LNOTICE) << inliers.size();
+		for (int i = 0; i < inliers.size(); ++i) {
+			(*cloud).at(inliers[i]).r = 255;
+			(*cloud).at(inliers[i]).g = 0;
+			(*cloud).at(inliers[i]).b = 0;
+		}
+	}
 	
-  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-  // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
-  // Optional
-  seg.setOptimizeCoefficients (true);
-  // Mandatory
-  seg.setModelType (pcl::SACMODEL_SPHERE);
-  seg.setMethodType (pcl::SAC_RANSAC);
-  seg.setDistanceThreshold (0.01);
-
-  seg.setInputCloud (cloud.makeShared ());
-  seg.segment (*inliers, *coefficients);
-
-  if (inliers->indices.size () == 0)
-  {
-    //PCL_ERROR ("Could not estimate a planar model for the given dataset.");
-    cout<<"Could not estimate a planar model for the given dataset."<<endl;
-  }
-//info
-  std::cout << "Model coefficients: " << coefficients->values[0] << " " 
-                                      << coefficients->values[1] << " "
-                                      << coefficients->values[2] << " " 
-                                      << coefficients->values[3] << std::endl;
-
-  std::cout << "Model inliers: " << inliers->indices.size () << std::endl;
-  for (size_t i = 0; i < inliers->indices.size (); ++i)
-    std::cout << inliers->indices[i] << "    " << cloud.points[inliers->indices[i]].x << " "
-                                               << cloud.points[inliers->indices[i]].y << " "
-                                               << cloud.points[inliers->indices[i]].z << std::endl;	
-//////////////////////////
-
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inliers (new pcl::PointCloud<pcl::PointXYZ> ());
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_outliers (new pcl::PointCloud<pcl::PointXYZ> ());
-
-    pcl::ExtractIndices<pcl::PointXYZ> extract;
-    extract.setInputCloud (cloud.makeShared());
-    extract.setIndices (inliers);
-    extract.setNegative (false);
-
-    extract.filter (*cloud_inliers);
-    //std::cout << "PointCloud representing the planar component: " << cloud_inliers->points.size () << " data points." << std::endl;
-
-    // Remove the planar inliers, extract the rest
-    extract.setNegative (true);
-    extract.filter (*cloud_outliers);
-    //*cloud_filtered = *cloud_f;
-
-
-
-out_outliers.write(cloud_outliers);
-out_inliers.write(cloud_inliers);	
-	
-	
+	out_colored.write(cloud);
 }
 
 
