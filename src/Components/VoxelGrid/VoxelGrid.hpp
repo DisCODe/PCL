@@ -7,17 +7,18 @@
 #ifndef VOXELGRID_HPP_
 #define VOXELGRID_HPP_
 
-#include "Component_Aux.hpp"
-#include "Component.hpp"
-#include "DataStream.hpp"
-#include "Property.hpp"
-#include "EventHandler2.hpp"
+#include <Base/Component_Aux.hpp>
+#include <Base/Component.hpp>
+#include <Base/DataStream.hpp>
+#include <Base/Property.hpp>
+#include <Base/EventHandler2.hpp>
 
 //#include <Types/PointXYZSIFT.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 
+using namespace std;
 namespace Processors {
 namespace VoxelGrid {
 

@@ -17,6 +17,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/transforms.h>
 
+using namespace std;
 namespace Processors {
 namespace CloudViewer {
 

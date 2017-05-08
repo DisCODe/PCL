@@ -7,11 +7,11 @@
 #ifndef CLUSTEREXTRACTION_HPP_
 #define CLUSTEREXTRACTION_HPP_
 
-#include "Component_Aux.hpp"
-#include "Component.hpp"
-#include "DataStream.hpp"
-#include "Property.hpp"
-#include "EventHandler2.hpp"
+#include <Base/Component_Aux.hpp>
+#include <Base/Component.hpp>
+#include <Base/DataStream.hpp>
+#include <Base/Property.hpp>
+#include <Base/EventHandler2.hpp>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -21,6 +21,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 
+using namespace std;
 namespace Processors {
 namespace ClusterExtraction {
 

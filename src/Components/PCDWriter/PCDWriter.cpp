@@ -18,6 +18,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 
+using namespace std;
 namespace Processors {
 namespace PCDWriter {
 

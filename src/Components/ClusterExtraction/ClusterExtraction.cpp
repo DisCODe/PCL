@@ -13,6 +13,7 @@
 #include <boost/bind.hpp>
 
 
+using namespace std;
 namespace Processors {
 namespace ClusterExtraction {
 

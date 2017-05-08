@@ -7,13 +7,13 @@
 #ifndef CLOUDVIEWER_HPP_
 #define CLOUDVIEWER_HPP_
 
-#include "Component_Aux.hpp"
-#include "Component.hpp"
-#include "DataStream.hpp"
-#include "Logger.hpp"
+#include <Base/Component_Aux.hpp>
+#include <Base/Component.hpp>
+#include <Base/DataStream.hpp>
+#include <Common/Logger.hpp>
 
-#include "EventHandler2.hpp"
-#include "Property.hpp"
+#include <Base/EventHandler2.hpp>
+#include <Base/Property.hpp>
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/PolygonMesh.h>
@@ -23,6 +23,7 @@
 
 
 
+using namespace std;
 namespace Processors {
 namespace CloudViewer {
 

@@ -14,6 +14,7 @@
 
 #include <pcl/filters/extract_indices.h>
 
+using namespace std;
 namespace Processors {
 namespace RANSACPlane {
 

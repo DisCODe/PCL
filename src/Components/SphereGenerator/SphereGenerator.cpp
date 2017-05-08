@@ -15,6 +15,7 @@
 #include <boost/random.hpp> 
 #include <boost/random/normal_distribution.hpp> 
 
+using namespace std;
 namespace Processors {
 namespace SphereGenerator {
 

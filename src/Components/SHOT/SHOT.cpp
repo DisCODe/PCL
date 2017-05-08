@@ -33,6 +33,7 @@ typedef pcl::Normal NormalType;
 typedef pcl::ReferenceFrame RFType;
 typedef pcl::SHOT352 DescriptorType;
 
+using namespace std;
 namespace Processors {
 namespace SHOT {
 

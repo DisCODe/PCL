@@ -17,6 +17,7 @@
 #include <pcl/surface/mls.h>
 
 
+using namespace std;
 namespace Processors {
 namespace MLSSmoothing {
 

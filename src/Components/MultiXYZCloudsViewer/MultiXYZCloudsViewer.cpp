@@ -16,6 +16,7 @@
 
 
 
+using namespace std;
 namespace Processors {
 namespace MultiXYZCloudsViewer {
 

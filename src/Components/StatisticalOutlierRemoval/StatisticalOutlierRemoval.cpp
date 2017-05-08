@@ -14,6 +14,7 @@
 
 #include <pcl/filters/statistical_outlier_removal.h>
 
+using namespace std;
 namespace Processors {
 namespace StatisticalOutlierRemoval {
 

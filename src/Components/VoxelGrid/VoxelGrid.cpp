@@ -14,6 +14,7 @@
 
 #include <pcl/filters/voxel_grid.h>
 
+using namespace std;
 namespace Processors {
 namespace VoxelGrid {
 

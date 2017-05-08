@@ -16,6 +16,7 @@
 
 #include <pcl/filters/filter.h>
 
+using namespace std;
 namespace Processors {
 namespace DepthConverter {
 

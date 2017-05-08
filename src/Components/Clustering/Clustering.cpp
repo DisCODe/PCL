@@ -23,6 +23,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 
 
+using namespace std;
 namespace Processors {
 namespace Clustering {
 
